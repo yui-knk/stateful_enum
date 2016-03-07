@@ -3,7 +3,7 @@ class CreateBugs < ActiveRecord::Migration
     create_table :bugs do |t|
       t.string :title
       t.string :dscription
-      t.integer :status
+      t.integer :status, default: 0
       t.integer :assigned_to
       t.datetime :resolved_at
 
