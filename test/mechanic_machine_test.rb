@@ -30,4 +30,9 @@ class MechanicMachineTest < Minitest::Test
     bug.resolve!
     refute bug.can_assign?
   end
+
+  def test_xxxx_transition
+    bug = Bug.new
+    assert({unassigned: :assigned}, bug.assign_transition)
+  end
 end

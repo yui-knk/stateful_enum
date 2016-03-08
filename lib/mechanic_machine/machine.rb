@@ -39,6 +39,10 @@ module MechanicMachine
         @model.send(:define_method, "can_#{name}?") do
           transitions.has_key? self.send(column).to_sym
         end
+
+        @model.send(:define_method, "#{name}_transition") do
+          transitions[self.send(column).to_sym]
+        end
       end
 
       def transition(transitions)
