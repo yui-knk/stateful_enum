@@ -7,4 +7,10 @@ class MechanicMachineTest < Minitest::Test
     bug.assign
     assert_equal 'assigned', bug.status
   end
+
+  def test_transition!
+    bug = Bug.new
+    bug.assign!
+    assert_equal 'assigned', bug.status
+  end
 end

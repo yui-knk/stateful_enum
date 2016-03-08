@@ -31,6 +31,10 @@ module MechanicMachine
             false
           end
         end
+
+        @model.send(:define_method, "#{name}!") do
+          send(name) || raise('Invalid transition')
+        end
       end
 
       def transition(transitions)
