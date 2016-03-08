@@ -1,11 +1,10 @@
 require 'test_helper'
 
 class MechanicMachineTest < Minitest::Test
-  def test_that_it_has_a_version_number
-    refute_nil ::MechanicMachine::VERSION
-  end
-
-  def test_it_does_something_useful
-    assert false
+  def test_transition
+    bug = Bug.new
+    assert_equal 'unassigned', bug.status
+    bug.assign
+    assert_equal 'assigned', bug.status
   end
 end
