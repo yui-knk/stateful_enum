@@ -23,4 +23,11 @@ class MechanicMachineTest < Minitest::Test
       bug.assign!
     end
   end
+
+  def test_can_xxxx?
+    bug = Bug.new
+    assert bug.can_assign?
+    bug.resolve!
+    refute bug.can_assign?
+  end
 end
