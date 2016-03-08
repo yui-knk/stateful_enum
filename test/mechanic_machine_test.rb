@@ -15,4 +15,12 @@ class MechanicMachineTest < Minitest::Test
     bug.resolve!
     assert_equal 'resolved', bug.status
   end
+
+  def test_invalid_transition
+    bug = Bug.new
+    bug.resolve!
+    assert_raises do
+      bug.assign!
+    end
+  end
 end
