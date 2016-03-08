@@ -9,3 +9,5 @@
 /tmp/
 /log/
 /test/dummy/log/
+
+.byebug_history
