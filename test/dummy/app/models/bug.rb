@@ -3,5 +3,8 @@ class Bug < ActiveRecord::Base
     event :assign do
       transition :unassigned => :assigned
     end
+    event :resolve do
+      transition [:unassigned, :assigned] => :resolved
+    end
   end
 end

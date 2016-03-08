@@ -39,9 +39,11 @@ module MechanicMachine
 
       def transition(transitions)
         transitions.each_pair do |from, to|
-          raise "Undefined state #{from}" unless @states.has_key? from
           raise "Undefined state #{to}" unless @states.has_key? to
-          @transitions[from] = to
+          Array(from).each do |f|
+            raise "Undefined state #{f}" unless @states.has_key? f
+            @transitions[f] = to
+          end
         end
       end
     end

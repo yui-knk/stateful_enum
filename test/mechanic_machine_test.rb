@@ -12,5 +12,7 @@ class MechanicMachineTest < Minitest::Test
     bug = Bug.new
     bug.assign!
     assert_equal 'assigned', bug.status
+    bug.resolve!
+    assert_equal 'resolved', bug.status
   end
 end
