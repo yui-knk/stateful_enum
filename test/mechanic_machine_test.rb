@@ -35,4 +35,9 @@ class MechanicMachineTest < Minitest::Test
     bug = Bug.new
     assert({unassigned: :assigned}, bug.assign_transition)
   end
+
+  def test_non_verb_methods_are_undefined
+    bug = Bug.new
+    refute bug.respond_to? :assigned!
+  end
 end

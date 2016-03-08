@@ -3,6 +3,11 @@ module MechanicMachine
     def initialize(model, column, states, &block)
       @model, @column, @states, @event_names = model, column, states, []
 
+      # undef non-verb methods e.g. Model#active!
+      states.each_key do |state|
+        @model.send :undef_method, "#{state}!"
+      end
+
       instance_eval(&block) if block
     end
 
