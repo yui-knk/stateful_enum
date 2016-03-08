@@ -1,6 +1,6 @@
-require 'mechanic_machine/machine'
+require 'stateful_enum/machine'
 
-module MechanicMachine
+module StatefulEnum
   module ActiveRecordEnumExtension
     #   enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
     #     event :assign do
@@ -12,7 +12,7 @@ module MechanicMachine
 
       if block
         definitions.each_key do |column|
-          MechanicMachine::Machine.new self, column, enum[column], &block
+          StatefulEnum::Machine.new self, column, enum[column], &block
         end
       end
     end

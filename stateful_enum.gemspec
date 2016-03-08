@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'mechanic_machine/version'
+require 'stateful_enum/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "mechanic_machine"
-  spec.version       = MechanicMachine::VERSION
+  spec.name          = "stateful_enum"
+  spec.version       = StatefulEnum::VERSION
   spec.authors       = ["Akira Matsuda"]
   spec.email         = ["ronnie@dio.jp"]
 

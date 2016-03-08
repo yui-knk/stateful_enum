@@ -20,6 +20,6 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
 end
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'mechanic_machine'
+require 'stateful_enum'
 
 require 'minitest/autorun'

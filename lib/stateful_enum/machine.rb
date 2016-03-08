@@ -1,4 +1,4 @@
-module MechanicMachine
+module StatefulEnum
   class Machine
     def initialize(model, column, states, &block)
       @model, @column, @states, @event_names = model, column, states, []
