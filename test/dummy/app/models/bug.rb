@@ -6,5 +6,8 @@ class Bug < ActiveRecord::Base
     event :resolve do
       transition [:unassigned, :assigned] => :resolved
     end
+    event :close do
+      transition all => :closed
+    end
   end
 end

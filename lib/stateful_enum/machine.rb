@@ -59,6 +59,10 @@ module StatefulEnum
           end
         end
       end
+
+      def all
+        @states.keys
+      end
     end
   end
 end

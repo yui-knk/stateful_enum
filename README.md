@@ -41,12 +41,15 @@ The stateful_enum gem extends AR::Enum definition to take a block with a similar
 Example:
 ```ruby
 class Bug < ApplicationRecord
-  enum status: {unassigned: 0, assigned: 1, resolved: 2} do
+  enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
     event :assign do
       transition :unassigned => :assigned
     end
     event :resolve do
       transition [:unassigned, :assigned] => :resolved
+    end
+    event :close do
+      transition all => :closed
     end
   end
 end
@@ -91,6 +94,7 @@ There are a few important details to note regarding this feature:
 * The `transition` method takes a Hash each key of which is state "from" transitions to the Hash value.
 * The "from" states and the "to" states should both be given in Symbols.
 * The "from" state can be multiple states, in which case the key can be given as an Array of states, as shown in the usage example.
+* The "from" state can be `all` that means all defined states.
 
 ### Error handling
 
@@ -101,10 +105,6 @@ There are a few important details to note regarding this feature:
 **TODO**
 
 ### Guards (:if and :unless options)
-
-**TODO**
-
-### Transition from "all"
 
 **TODO**
 
