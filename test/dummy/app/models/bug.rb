@@ -5,6 +5,10 @@ class Bug < ActiveRecord::Base
     event :assign do
       transition :unassigned => :assigned, if: -> { !!assigned_to }
     end
+    # for testing the :unless option
+    event :assign_with_unless do
+      transition :unassigned => :assigned, unless: -> { !assigned_to }
+    end
 
     event :resolve do
       before do

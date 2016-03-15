@@ -82,4 +82,15 @@ class StatefulEnumTest < ActiveSupport::TestCase
       bug.assign!
     end
   end
+
+  def test_unless_condition
+    bug = Bug.new
+    assert_raises do
+      bug.assign_with_unless!
+    end
+    bug.assigned_to = User.create!(name: 'user 1')
+    assert_nothing_raised do
+      bug.assign_with_unless!
+    end
+  end
 end

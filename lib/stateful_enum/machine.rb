@@ -59,6 +59,10 @@ module StatefulEnum
       def transition(transitions, options = {})
         if options.blank?
           options[:if] = transitions.delete :if
+          #TODO should err if if & unless were specified together?
+          if (unless_condition = transitions.delete :unless)
+            options[:if] = -> { !instance_exec(&unless_condition) }
+          end
         end
         transitions.each_pair do |from, to|
           raise "Undefined state #{to}" unless @states.has_key? to
