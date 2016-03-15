@@ -17,7 +17,7 @@ class Bug < ActiveRecord::Base
         Notifier.notify "Bug##{id} has been closed."
       end
 
-      transition all => :closed
+      transition all - [:closed] => :closed
     end
   end
 

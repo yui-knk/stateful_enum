@@ -59,7 +59,7 @@ class Bug < ApplicationRecord
         Notifier.notify "Bug##{id} has been closed."
       end
 
-      transition all => :closed
+      transition all - [:closed] => :closed
     end
   end
 end
