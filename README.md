@@ -121,10 +121,10 @@ end
 
 You can define `before` and `after` event hooks inside of an `event` block.
 
-### Error handling
 
-**TODO**
+## TODO
 
+* Better Error handling
 
 
 ## Contributing
