@@ -27,13 +27,15 @@ module StatefulEnum
       end
 
       def define_transition_methods
-        column, name, transitions, before = @column, @name, @transitions, @before
+        column, name, transitions, before, after = @column, @name, @transitions, @before, @after
 
         @model.send(:define_method, name) do
           if (to = transitions[self.send(column).to_sym])
             #TODO transaction?
             instance_eval(&before) if before
-            self.class.instance_variable_get(:@_enum_methods_module).instance_method("#{to}!").bind(self).call
+            ret = self.class.instance_variable_get(:@_enum_methods_module).instance_method("#{to}!").bind(self).call
+            instance_eval(&after) if after
+            ret
           else
             false
           end
@@ -68,6 +70,10 @@ module StatefulEnum
 
       def before(&block)
         @before = block
+      end
+
+      def after(&block)
+        @after = block
       end
     end
   end

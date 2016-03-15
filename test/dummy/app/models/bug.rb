@@ -13,7 +13,20 @@ class Bug < ActiveRecord::Base
     end
 
     event :close do
+      after do
+        Notifier.notify "Bug##{id} has been closed."
+      end
+
       transition all => :closed
+    end
+  end
+
+  class Notifier
+    cattr_accessor(:messages) { [] }
+    class << self
+      def notify(msg)
+        self.messages << msg
+      end
     end
   end
 end

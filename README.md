@@ -55,6 +55,10 @@ class Bug < ApplicationRecord
     end
 
     event :close do
+      after do
+        Notifier.notify "Bug##{id} has been closed."
+      end
+
       transition all => :closed
     end
   end

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class StatefulEnumTest < Minitest::Test
+class StatefulEnumTest < ActiveSupport::TestCase
   def test_transition
     bug = Bug.new
     assert_equal 'unassigned', bug.status
@@ -60,5 +60,12 @@ class StatefulEnumTest < Minitest::Test
     assert_nil bug.resolved_at
     bug.resolve
     refute_nil bug.resolved_at
+  end
+
+  def test_after_transition_hook
+    bug = Bug.new
+    assert_difference 'Bug::Notifier.messages.count' do
+      bug.close
+    end
   end
 end
