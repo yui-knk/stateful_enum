@@ -4,12 +4,14 @@ class StatefulEnumTest < ActiveSupport::TestCase
   def test_transition
     bug = Bug.new
     assert_equal 'unassigned', bug.status
+    bug.assigned_to = User.create!(name: 'user 1')
     bug.assign
     assert_equal 'assigned', bug.status
   end
 
   def test_transition!
     bug = Bug.new
+    bug.assigned_to = User.create!(name: 'user 1')
     bug.assign!
     assert_equal 'assigned', bug.status
   end
@@ -20,6 +22,7 @@ class StatefulEnumTest < ActiveSupport::TestCase
     assert_equal 'closed', bug.status
 
     bug = Bug.new
+    bug.assigned_to = User.create!(name: 'user 1')
     bug.assign!
     bug.close
     assert_equal 'closed', bug.status
@@ -66,6 +69,17 @@ class StatefulEnumTest < ActiveSupport::TestCase
     bug = Bug.new
     assert_difference 'Bug::Notifier.messages.count' do
       bug.close
+    end
+  end
+
+  def test_if_condition
+    bug = Bug.new
+    assert_raises do
+      bug.assign!
+    end
+    bug.assigned_to = User.create!(name: 'user 1')
+    assert_nothing_raised do
+      bug.assign!
     end
   end
 end

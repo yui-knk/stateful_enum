@@ -30,7 +30,9 @@ module StatefulEnum
         column, name, transitions, before, after = @column, @name, @transitions, @before, @after
 
         @model.send(:define_method, name) do
-          if (to = transitions[self.send(column).to_sym])
+          to, condition = transitions[self.send(column).to_sym]
+          #TODO better error
+          if to && (!condition || instance_exec(&condition))
             #TODO transaction?
             instance_eval(&before) if before
             ret = self.class.instance_variable_get(:@_enum_methods_module).instance_method("#{to}!").bind(self).call
@@ -50,16 +52,19 @@ module StatefulEnum
         end
 
         @model.send(:define_method, "#{name}_transition") do
-          transitions[self.send(column).to_sym]
+          transitions[self.send(column).to_sym].try! :first
         end
       end
 
-      def transition(transitions)
+      def transition(transitions, options = {})
+        if options.blank?
+          options[:if] = transitions.delete :if
+        end
         transitions.each_pair do |from, to|
           raise "Undefined state #{to}" unless @states.has_key? to
           Array(from).each do |f|
             raise "Undefined state #{f}" unless @states.has_key? f
-            @transitions[f] = to
+            @transitions[f] = [to, options[:if]]
           end
         end
       end

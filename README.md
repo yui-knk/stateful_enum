@@ -106,6 +106,17 @@ There are a few important details to note regarding this feature:
 * The "from" state can be multiple states, in which case the key can be given as an Array of states, as shown in the usage example.
 * The "from" state can be `all` that means all defined states.
 
+### :if Condition
+
+The `transition` method takes an `:if` option as a Proc.
+
+Example:
+```ruby
+event :assign do
+  transition :unassigned => :assigned, if: -> { !!assigned_to }
+end
+```
+
 ### Event hooks
 
 You can define `before` and `after` event hooks inside of an `event` block.
@@ -114,9 +125,6 @@ You can define `before` and `after` event hooks inside of an `event` block.
 
 **TODO**
 
-### Guards (:if and :unless options)
-
-**TODO**
 
 
 ## Contributing
