@@ -54,4 +54,11 @@ class StatefulEnumTest < Minitest::Test
     bug = Bug.new
     refute bug.respond_to? :assigned!
   end
+
+  def test_before_transition_hook
+    bug = Bug.new
+    assert_nil bug.resolved_at
+    bug.resolve
+    refute_nil bug.resolved_at
+  end
 end
