@@ -12,8 +12,22 @@ class StatefulEnumTest < Minitest::Test
     bug = Bug.new
     bug.assign!
     assert_equal 'assigned', bug.status
+  end
+
+  def test_transition_from_all
+    bug = Bug.new
+    bug.close
+    assert_equal 'closed', bug.status
+
+    bug = Bug.new
+    bug.assign!
+    bug.close
+    assert_equal 'closed', bug.status
+
+    bug = Bug.new
     bug.resolve!
-    assert_equal 'resolved', bug.status
+    bug.close
+    assert_equal 'closed', bug.status
   end
 
   def test_invalid_transition
