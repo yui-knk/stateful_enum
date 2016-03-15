@@ -1,41 +1,119 @@
 # StatefulEnum
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/stateful_enum`. To experiment with that code, run `bin/console` for an interactive prompt.
+stateful_enum is a state machine gem built on top of ActiveRecord's built-in ActiveRecord::Enum.
 
-TODO: Delete this and the text above, and describe your gem
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your Rails app's Gemfile:
 
 ```ruby
 gem 'stateful_enum'
 ```
 
-And then execute:
+And bundle.
 
-    $ bundle
 
-Or install it yourself as:
+## Motivation
 
-    $ gem install stateful_enum
+### You Ain't Gonna Need Abstraction
+
+stateful_enum depends on ActiveRecord. If you prefer a well-abstracted state machine library that supports multiple datastores, or Plain Old Ruby Objects (who needs that feature?), I'm sorry but this gem is not for you.
+
+### I Hate Saving States in a VARCHAR Column
+
+From a database design point of view, I prefer to save state data in an INTEGER column rather than saving the state name directly in a VARCHAR column.
+
+### :heart: ActiveRecord::Enum
+
+ActiveRecord 4.1+ has a very simple and useful built-in Enum DSL that provides human-friendly API over integer values in DB.
+
+### Method Names Should be Verbs
+
+AR::Enum automatically defines Ruby methods per each label. However, Enum labels are in most cases adjectives or past participle, which often creates weird method names.
+What we really want to define as methods are the transition events between states, and not the states themselves.
+
 
 ## Usage
 
-TODO: Write usage instructions here
+The stateful_enum gem extends AR::Enum definition to take a block with a similar DSL to the [state_machine](https://github.com/pluginaweek/state_machine) gem.
 
-## Development
+Example:
+```ruby
+class Bug < ApplicationRecord
+  enum status: {unassigned: 0, assigned: 1, resolved: 2} do
+    event :assign do
+      transition :unassigned => :assigned
+    end
+    event :resolve do
+      transition [:unassigned, :assigned] => :resolved
+    end
+  end
+end
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### Defining the States
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Just call the AR::Enum's `enum` method.  The only difference from the original `enum` method is that our `enum` call takes a block.
+Please see the full API documentation of [AR::Enum](http://edgeapi.rubyonrails.org/classes/ActiveRecord/Enum.html) for more information.
+
+### Defining the Events
+
+You can declare events through `event` method inside of an `enum` block. Then stateful_enum defines the following methods per each event:
+
+**An instance method to fire the event**
+
+```ruby
+@bug.assign  # does nothing if a valid transition for the current state is not defined
+```
+
+**An instance method with `!` to fire the event**
+```ruby
+@bug.assign!  # raises if a valid transition for the current state is not defined
+```
+
+**A predicate method that returns if the event is fireable**
+```ruby
+@bug.can_assign?  # returns if the `assign` event can be called on this bug or not
+```
+
+**An instance method that returns the state name after an event**
+```ruby
+@bug.assign_transition  #=> :assigned
+```
+
+### Defining the Transitions
+
+You can define state transitions through `transition` method inside of an `event` block.
+
+There are a few important details to note regarding this feature:
+
+* The `transition` method takes a Hash each key of which is state "from" transitions to the Hash value.
+* The "from" states and the "to" states should both be given in Symbols.
+* The "from" state can be multiple states, in which case the key can be given as an Array of states, as shown in the usage example.
+
+### Error handling
+
+**TODO**
+
+### Event hooks
+
+**TODO**
+
+### Guards (:if and :unless options)
+
+**TODO**
+
+### Transition from "all"
+
+**TODO**
+
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/stateful_enum.
+Pull requests are welcome on GitHub at https://github.com/amatsuda/stateful_enum.
 
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
