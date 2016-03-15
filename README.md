@@ -106,11 +106,11 @@ There are a few important details to note regarding this feature:
 * The "from" state can be multiple states, in which case the key can be given as an Array of states, as shown in the usage example.
 * The "from" state can be `all` that means all defined states.
 
-### Error handling
-
-**TODO**
-
 ### Event hooks
+
+You can define `before` and `after` event hooks inside of an `event` block.
+
+### Error handling
 
 **TODO**
 
