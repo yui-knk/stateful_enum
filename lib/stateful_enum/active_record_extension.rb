@@ -12,7 +12,8 @@ module StatefulEnum
 
       if block
         definitions.each_key do |column|
-          StatefulEnum::Machine.new self, column, enum[column], &block
+          states = enum[column]
+          StatefulEnum::Machine.new self, column, (states.is_a?(Hash) ? states.keys : states), &block
         end
       end
     end

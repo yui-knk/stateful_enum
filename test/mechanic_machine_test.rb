@@ -93,4 +93,14 @@ class StatefulEnumTest < ActiveSupport::TestCase
       bug.assign_with_unless!
     end
   end
+
+  def test_enum_definition_with_array
+    ActiveRecord::Migration.create_table(:array_enum_test) {|t| t.integer :col }
+    tes = Class.new(ActiveRecord::Base) do
+      self.table_name = 'array_enum_test'
+      enum(col: [:foo, :bar]) { event(:e) { transition(foo: :bar) } }
+    end.new col: 'foo'
+    tes.e
+    assert 'bar', tes.col
+  end
 end

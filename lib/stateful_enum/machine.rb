@@ -4,7 +4,7 @@ module StatefulEnum
       @model, @column, @states, @event_names = model, column, states, []
 
       # undef non-verb methods e.g. Model#active!
-      states.each_key do |state|
+      states.each do |state|
         @model.send :undef_method, "#{state}!"
       end
 
@@ -65,16 +65,16 @@ module StatefulEnum
           end
         end
         transitions.each_pair do |from, to|
-          raise "Undefined state #{to}" unless @states.has_key? to
+          raise "Undefined state #{to}" unless @states.include? to
           Array(from).each do |f|
-            raise "Undefined state #{f}" unless @states.has_key? f
+            raise "Undefined state #{f}" unless @states.include? f
             @transitions[f] = [to, options[:if]]
           end
         end
       end
 
       def all
-        @states.keys
+        @states
       end
 
       def before(&block)
