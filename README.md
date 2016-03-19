@@ -1,4 +1,4 @@
-# StatefulEnum
+# StatefulEnum [![Build Status](https://travis-ci.org/amatsuda/stateful_enum.svg?branch=master)](https://travis-ci.org/amatsuda/stateful_enum)
 
 stateful_enum is a state machine gem built on top of ActiveRecord's built-in ActiveRecord::Enum.
 
