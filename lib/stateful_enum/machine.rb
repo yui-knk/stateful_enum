@@ -68,6 +68,7 @@ module StatefulEnum
           raise "Undefined state #{to}" unless @states.include? to
           Array(from).each do |f|
             raise "Undefined state #{f}" unless @states.include? f
+            raise "Duplicate entry: Transition from #{f} to #{@transitions[f].first} has already been defined." if @transitions[f]
             @transitions[f] = [to, options[:if]]
           end
         end
