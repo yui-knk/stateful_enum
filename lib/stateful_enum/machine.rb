@@ -1,7 +1,7 @@
 module StatefulEnum
   class Machine
     def initialize(model, column, states, &block)
-      @model, @column, @states, @event_names = model, column, states, []
+      @model, @column, @states, @event_names, @events = model, column, states, [], []
 
       # undef non-verb methods e.g. Model#active!
       states.each do |state|
@@ -13,8 +13,20 @@ module StatefulEnum
 
     def event(name, &block)
       raise "event: :#{name} has already been defined." if @event_names.include? name
-      Event.new @model, @column, @states, name, &block
+      @events << Event.new(@model, @column, @states, name, &block)
       @event_names << name
+    end
+
+    def to_dot
+      events = @events.map(&:to_dot).flatten
+
+      <<-DOT.strip_heredoc
+        digraph dfa {
+          rankdir=LR;
+          node [shape = circle];
+          #{events.join "\n"}
+        }
+      DOT
     end
 
     class Event
@@ -83,6 +95,15 @@ module StatefulEnum
 
       def after(&block)
         @after = block
+      end
+
+      def to_dot
+        @transitions.each_with_object([]) do |(from, to), acc|
+          Array(from).each do |f|
+            to, _ = @transitions[f]
+            acc << "  #{from} -> #{to} [label=\"#{@name}\"];"
+          end
+        end
       end
     end
   end
