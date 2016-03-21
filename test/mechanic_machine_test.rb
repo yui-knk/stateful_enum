@@ -39,6 +39,7 @@ class StatefulEnumTest < ActiveSupport::TestCase
     assert_raises do
       bug.assign!
     end
+    assert_equal 'resolved', bug.status
   end
 
   def test_can_xxxx?
