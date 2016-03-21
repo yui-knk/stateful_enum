@@ -103,4 +103,30 @@ class StatefulEnumTest < ActiveSupport::TestCase
     tes.e
     assert 'bar', tes.col
   end
+
+  def test_duplicate_from_in_one_event
+    assert_raises do
+      Class.new(ActiveRecord::Base) do
+        enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
+          event :assign do
+            transition :unassigned => :assigned
+            transition :unassigned => :resolved
+          end
+        end
+      end
+    end
+  end
+
+  def test_not_duplicate_from_in_one_event
+    assert_nothing_raised do
+      Class.new(ActiveRecord::Base) do
+        enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
+          event :toggle do
+            transition :unassigned => :assigned
+            transition :assigned => :unassigned
+          end
+        end
+      end
+    end
+  end
 end
