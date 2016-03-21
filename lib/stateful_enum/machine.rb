@@ -19,7 +19,7 @@ module StatefulEnum
 
     class Event
       def initialize(model, column, states, name, &block)
-        @model, @column, @states, @name, @transitions = model, column, states, name, {}
+        @model, @column, @states, @name, @transitions, @before, @after = model, column, states, name, {}, nil, nil
 
         instance_eval(&block) if block
 
