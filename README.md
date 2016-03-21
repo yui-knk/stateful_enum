@@ -77,7 +77,7 @@ You can declare events through `event` method inside of an `enum` block. Then st
 **An instance method to fire the event**
 
 ```ruby
-@bug.assign  # does nothing if a valid transition for the current state is not defined
+@bug.assign  # does nothing and returns false if a valid transition for the current state is not defined
 ```
 
 **An instance method with `!` to fire the event**
