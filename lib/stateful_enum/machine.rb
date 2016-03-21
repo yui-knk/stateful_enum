@@ -26,36 +26,6 @@ module StatefulEnum
         define_transition_methods
       end
 
-      def define_transition_methods
-        column, name, transitions, before, after = @column, @name, @transitions, @before, @after
-
-        @model.send(:define_method, name) do
-          to, condition = transitions[self.send(column).to_sym]
-          #TODO better error
-          if to && (!condition || instance_exec(&condition))
-            #TODO transaction?
-            instance_eval(&before) if before
-            ret = self.class.instance_variable_get(:@_enum_methods_module).instance_method("#{to}!").bind(self).call
-            instance_eval(&after) if after
-            ret
-          else
-            false
-          end
-        end
-
-        @model.send(:define_method, "#{name}!") do
-          send(name) || raise('Invalid transition')
-        end
-
-        @model.send(:define_method, "can_#{name}?") do
-          transitions.has_key? self.send(column).to_sym
-        end
-
-        @model.send(:define_method, "#{name}_transition") do
-          transitions[self.send(column).to_sym].try! :first
-        end
-      end
-
       def transition(transitions, options = {})
         if options.blank?
           options[:if] = transitions.delete :if
@@ -84,6 +54,37 @@ module StatefulEnum
       def after(&block)
         @after = block
       end
+
+      private
+        def define_transition_methods
+          column, name, transitions, before, after = @column, @name, @transitions, @before, @after
+
+          @model.send(:define_method, name) do
+            to, condition = transitions[self.send(column).to_sym]
+            #TODO better error
+            if to && (!condition || instance_exec(&condition))
+              #TODO transaction?
+              instance_eval(&before) if before
+              ret = self.class.instance_variable_get(:@_enum_methods_module).instance_method("#{to}!").bind(self).call
+              instance_eval(&after) if after
+              ret
+            else
+              false
+            end
+          end
+
+          @model.send(:define_method, "#{name}!") do
+            send(name) || raise('Invalid transition')
+          end
+
+          @model.send(:define_method, "can_#{name}?") do
+            transitions.has_key? self.send(column).to_sym
+          end
+
+          @model.send(:define_method, "#{name}_transition") do
+            transitions[self.send(column).to_sym].try! :first
+          end
+        end
     end
   end
 end
