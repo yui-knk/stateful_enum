@@ -1,4 +1,4 @@
-class CreateBugs < ActiveRecord::Migration
+class CreateBugs < (Rails::VERSION::STRING >= '5' ? ActiveRecord::Migration[5.0] : ActiveRecord::Migration)
   def change
     create_table :bugs do |t|
       t.string :title
