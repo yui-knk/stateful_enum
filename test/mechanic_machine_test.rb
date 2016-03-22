@@ -58,7 +58,7 @@ class StatefulEnumTest < ActiveSupport::TestCase
 
   def test_xxxx_transition
     bug = Bug.new
-    assert({unassigned: :assigned}, bug.assign_transition)
+    assert_equal :assigned, bug.assign_transition
   end
 
   def test_non_verb_methods_are_undefined
@@ -109,7 +109,7 @@ class StatefulEnumTest < ActiveSupport::TestCase
       enum(col: [:foo, :bar]) { event(:e) { transition(foo: :bar) } }
     end.new col: 'foo'
     tes.e
-    assert 'bar', tes.col
+    assert_equal 'bar', tes.col
   end
 
   def test_duplicate_from_in_one_event
@@ -170,6 +170,66 @@ class StatefulEnumTest < ActiveSupport::TestCase
 
         enum another_status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3}
       end
+    end
+  end
+
+  if Rails::VERSION::STRING >= '5'
+    def test_enum_definition_with_prefix
+      ActiveRecord::Migration.create_table(:enum_prefix_test) do |t|
+        t.integer :status
+        t.integer :comments_status
+      end
+      tes = Class.new(ActiveRecord::Base) do
+        self.table_name = 'enum_prefix_test'
+        enum(status: [:active, :archived], _prefix: true) { event(:archive) { transition(active: :archived) } }
+        enum(comments_status: [:active, :inactive], _prefix: :comments) { event(:close) { transition(active: :inactive) } }
+      end.new status: :active, comments_status: :active
+
+      assert_equal :archived, tes.status_archive_transition
+      assert tes.can_status_archive?
+      tes.status_archive
+      assert_equal 'archived', tes.status
+      refute tes.can_status_archive?
+
+      assert_equal :inactive, tes.comments_close_transition
+      assert tes.can_comments_close?
+      tes.comments_close!
+      assert_equal 'inactive', tes.comments_status
+      refute tes.can_comments_close?
+    end
+
+    def test_enum_definition_with_suffix
+      ActiveRecord::Migration.create_table(:enum_suffix_test) do |t|
+        t.integer :status
+        t.integer :comments_status
+      end
+      tes = Class.new(ActiveRecord::Base) do
+        self.table_name = 'enum_suffix_test'
+        enum(status: [:active, :archived], _suffix: true) { event(:archive) { transition(active: :archived) } }
+        enum(comments_status: [:active, :inactive], _suffix: :comments) { event(:close) { transition(active: :inactive) } }
+      end.new status: :active, comments_status: :active
+
+      assert_equal :archived, tes.archive_status_transition
+      assert tes.can_archive_status?
+      tes.archive_status
+      assert_equal 'archived', tes.status
+      refute tes.can_archive_status?
+
+      assert_equal :inactive, tes.close_comments_transition
+      assert tes.can_close_comments?
+      tes.close_comments!
+      assert_equal 'inactive', tes.comments_status
+      refute tes.can_close_comments?
+    end
+
+    def test_enum_definition_with_prefix_and_suffix
+      ActiveRecord::Migration.create_table(:enum_prefix_and_suffix_test) { |t| t.integer :status }
+      tes = Class.new(ActiveRecord::Base) do
+        self.table_name = 'enum_prefix_and_suffix_test'
+        enum(status: [:active, :archived], _prefix: :prefix, _suffix: :suffix) { event(:archive) { transition(active: :archived) } }
+      end.new status: :active
+      tes.prefix_archive_suffix
+      assert_equal 'archived', tes.status
     end
   end
 end

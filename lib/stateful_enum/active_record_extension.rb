@@ -8,12 +8,13 @@ module StatefulEnum
     #     end
     #   end
     def enum(definitions, &block)
+      prefix, suffix = definitions[:_prefix], definitions[:_suffix]
       enum = super definitions
 
       if block
         definitions.each_key do |column|
           states = enum[column]
-          StatefulEnum::Machine.new self, column, (states.is_a?(Hash) ? states.keys : states), &block
+          StatefulEnum::Machine.new self, column, (states.is_a?(Hash) ? states.keys : states), prefix, suffix, &block
         end
       end
     end
