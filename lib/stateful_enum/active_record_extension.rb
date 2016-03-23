@@ -8,7 +8,7 @@ module StatefulEnum
     #     end
     #   end
     def enum(definitions, &block)
-      prefix, suffix = definitions[:_prefix], definitions[:_suffix]
+      prefix, suffix = definitions[:_prefix], definitions[:_suffix] if Rails::VERSION::STRING >= '5'
       enum = super definitions
 
       if block
