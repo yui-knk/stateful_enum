@@ -15,8 +15,7 @@ module StatefulEnum
 
       # undef non-verb methods e.g. Model#active!
       states.each do |state|
-        method_name = "#{@prefix}#{state}#{@suffix}!"
-        @model.send :undef_method, method_name
+        @model.send :undef_method, "#{@prefix}#{state}#{@suffix}!"
       end
 
       instance_eval(&block) if block
@@ -75,10 +74,10 @@ module StatefulEnum
           to, condition = transitions[self.send(column).to_sym]
           #TODO better error
           if to && (!condition || instance_exec(&condition))
-            method_name = "#{prefix}#{to}#{suffix}!"
             #TODO transaction?
             instance_eval(&before) if before
-            ret = self.class.send(:_enum_methods_module).instance_method(method_name).bind(self).call
+            original_method = self.class.send(:_enum_methods_module).instance_method "#{prefix}#{to}#{suffix}!"
+            ret = original_method.bind(self).call
             instance_eval(&after) if after
             ret
           else
