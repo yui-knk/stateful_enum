@@ -58,7 +58,7 @@ class StatefulEnumTest < ActiveSupport::TestCase
 
   def test_xxxx_transition
     bug = Bug.new
-    assert({unassigned: :assigned}, bug.assign_transition)
+    assert_equal :assigned, bug.assign_transition
   end
 
   def test_non_verb_methods_are_undefined
