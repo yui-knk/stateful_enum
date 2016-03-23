@@ -109,7 +109,7 @@ class StatefulEnumTest < ActiveSupport::TestCase
       enum(col: [:foo, :bar]) { event(:e) { transition(foo: :bar) } }
     end.new col: 'foo'
     tes.e
-    assert 'bar', tes.col
+    assert_equal 'bar', tes.col
   end
 
   def test_duplicate_from_in_one_event
