@@ -1,11 +1,22 @@
 module StatefulEnum
   class Machine
-    def initialize(model, column, states, &block)
+    def initialize(model, column, states, prefix, suffix, &block)
       @model, @column, @states, @event_names = model, column, states, []
+      @prefix = if prefix == true
+                  "#{column}_"
+                elsif prefix
+                  "#{prefix}_"
+                end
+      @suffix = if suffix == true
+                  "_#{column}"
+                elsif suffix
+                  "_#{suffix}"
+                end
 
       # undef non-verb methods e.g. Model#active!
       states.each do |state|
-        @model.send :undef_method, "#{state}!"
+        method_name = "#{@prefix}#{state}#{@suffix}!"
+        @model.send :undef_method, method_name
       end
 
       instance_eval(&block) if block
@@ -13,13 +24,13 @@ module StatefulEnum
 
     def event(name, &block)
       raise "event: :#{name} has already been defined." if @event_names.include? name
-      Event.new @model, @column, @states, name, &block
+      Event.new @model, @column, @states, @prefix, @suffix, name, &block
       @event_names << name
     end
 
     class Event
-      def initialize(model, column, states, name, &block)
-        @model, @column, @states, @name, @transitions, @before, @after = model, column, states, name, {}, nil, nil
+      def initialize(model, column, states, prefix, suffix, name, &block)
+        @model, @column, @states, @prefix, @suffix, @name, @transitions, @before, @after = model, column, states, prefix, suffix, name, {}, nil, nil
 
         instance_eval(&block) if block
 
@@ -57,15 +68,17 @@ module StatefulEnum
       end
 
       private def define_transition_methods
-        column, name, transitions, before, after = @column, @name, @transitions, @before, @after
+        column, prefix, suffix, name, transitions, before, after = @column, @prefix, @suffix, @name, @transitions, @before, @after
+        new_method_name = "#{prefix}#{name}#{suffix}"
 
-        @model.send(:define_method, name) do
+        @model.send(:define_method, new_method_name) do
           to, condition = transitions[self.send(column).to_sym]
           #TODO better error
           if to && (!condition || instance_exec(&condition))
+            method_name = "#{prefix}#{to}#{suffix}!"
             #TODO transaction?
             instance_eval(&before) if before
-            ret = self.class.send(:_enum_methods_module).instance_method("#{to}!").bind(self).call
+            ret = self.class.send(:_enum_methods_module).instance_method(method_name).bind(self).call
             instance_eval(&after) if after
             ret
           else
@@ -73,15 +86,15 @@ module StatefulEnum
           end
         end
 
-        @model.send(:define_method, "#{name}!") do
-          send(name) || raise('Invalid transition')
+        @model.send(:define_method, "#{new_method_name}!") do
+          send(new_method_name) || raise('Invalid transition')
         end
 
-        @model.send(:define_method, "can_#{name}?") do
+        @model.send(:define_method, "can_#{new_method_name}?") do
           transitions.has_key? self.send(column).to_sym
         end
 
-        @model.send(:define_method, "#{name}_transition") do
+        @model.send(:define_method, "#{new_method_name}_transition") do
           transitions[self.send(column).to_sym].try! :first
         end
       end
