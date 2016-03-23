@@ -137,4 +137,39 @@ class StatefulEnumTest < ActiveSupport::TestCase
       end
     end
   end
+
+  def test_error_raised_when_states_are_duplicated_with_another_enum_states
+    assert_raises ArgumentError do
+      Class.new(ActiveRecord::Base) do
+        enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
+          event :toggle do
+            transition :unassigned => :assigned
+            transition :assigned => :unassigned
+          end
+        end
+
+        enum another_status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
+          event :toggle do
+            transition :unassigned => :assigned
+            transition :assigned => :unassigned
+          end
+        end
+      end
+    end
+  end
+
+  def test_error_raised_when_states_are_duplicated_with_normal_enum_entry
+    assert_raises ArgumentError do
+      Class.new(ActiveRecord::Base) do
+        enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
+          event :toggle do
+            transition :unassigned => :assigned
+            transition :assigned => :unassigned
+          end
+        end
+
+        enum another_status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3}
+      end
+    end
+  end
 end
