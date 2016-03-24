@@ -129,7 +129,7 @@ class StatefulEnumTest < ActiveSupport::TestCase
     assert_nothing_raised do
       Class.new(ActiveRecord::Base) do
         enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
-          event :toggle do
+          event :toggle_assignment do
             transition :unassigned => :assigned
             transition :assigned => :unassigned
           end
@@ -142,14 +142,14 @@ class StatefulEnumTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       Class.new(ActiveRecord::Base) do
         enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
-          event :toggle do
+          event :toggle_assignment do
             transition :unassigned => :assigned
             transition :assigned => :unassigned
           end
         end
 
         enum another_status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
-          event :toggle do
+          event :toggle_assignment do
             transition :unassigned => :assigned
             transition :assigned => :unassigned
           end
@@ -162,7 +162,7 @@ class StatefulEnumTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       Class.new(ActiveRecord::Base) do
         enum status: {unassigned: 0, assigned: 1, resolved: 2, closed: 3} do
-          event :toggle do
+          event :toggle_assignment do
             transition :unassigned => :assigned
             transition :assigned => :unassigned
           end
