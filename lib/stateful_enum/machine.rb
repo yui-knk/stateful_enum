@@ -29,7 +29,7 @@ module StatefulEnum
 
     class Event
       def initialize(model, column, states, prefix, suffix, name, &block)
-        @model, @column, @states, @prefix, @suffix, @name, @transitions, @before, @after = model, column, states, prefix, suffix, name, {}, nil, nil
+        @states, @name, @transitions, @before, @after = states, name, {}, nil, nil
 
         instance_eval(&block) if block
 
@@ -37,7 +37,7 @@ module StatefulEnum
         new_method_name = "#{prefix}#{name}#{suffix}"
 
         # defining event methods
-        @model.instance_eval do
+        model.instance_eval do
           # def assign()
           detect_enum_conflict! column, new_method_name
           define_method new_method_name do
