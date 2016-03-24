@@ -33,7 +33,7 @@ module StatefulEnum
 
         instance_eval(&block) if block
 
-        column, prefix, suffix, name, transitions, before, after = @column, @prefix, @suffix, @name, @transitions, @before, @after
+        transitions, before, after = @transitions, @before, @after
         new_method_name = "#{prefix}#{name}#{suffix}"
 
         @model.send :detect_enum_conflict!, column, new_method_name
