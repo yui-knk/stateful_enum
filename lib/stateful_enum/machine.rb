@@ -22,7 +22,7 @@ module StatefulEnum
     end
 
     def event(name, &block)
-      raise "event: :#{name} has already been defined." if @event_names.include? name
+      raise ArgumentError, "event: :#{name} has already been defined." if @event_names.include? name
       Event.new @model, @column, @states, @prefix, @suffix, name, &block
       @event_names << name
     end
