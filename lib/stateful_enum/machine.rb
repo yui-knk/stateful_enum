@@ -36,35 +36,42 @@ module StatefulEnum
         transitions, before, after = @transitions, @before, @after
         new_method_name = "#{prefix}#{name}#{suffix}"
 
-        @model.send :detect_enum_conflict!, column, new_method_name
-        @model.send :define_method, new_method_name do
-          to, condition = transitions[self.send(column).to_sym]
-          #TODO better error
-          if to && (!condition || instance_exec(&condition))
-            #TODO transaction?
-            instance_eval(&before) if before
-            original_method = self.class.send(:_enum_methods_module).instance_method "#{prefix}#{to}#{suffix}!"
-            ret = original_method.bind(self).call
-            instance_eval(&after) if after
-            ret
-          else
-            false
+        # defining event methods
+        @model.instance_eval do
+          # def assign()
+          detect_enum_conflict! column, new_method_name
+          define_method new_method_name do
+            to, condition = transitions[self.send(column).to_sym]
+            #TODO better error
+            if to && (!condition || instance_exec(&condition))
+              #TODO transaction?
+              instance_eval(&before) if before
+              original_method = self.class.send(:_enum_methods_module).instance_method "#{prefix}#{to}#{suffix}!"
+              ret = original_method.bind(self).call
+              instance_eval(&after) if after
+              ret
+            else
+              false
+            end
           end
-        end
 
-        @model.send :detect_enum_conflict!, column, "#{new_method_name}!"
-        @model.send :define_method, "#{new_method_name}!" do
-          send(new_method_name) || raise('Invalid transition')
-        end
+          # def assign!()
+          detect_enum_conflict! column, "#{new_method_name}!"
+          define_method "#{new_method_name}!" do
+            send(new_method_name) || raise('Invalid transition')
+          end
 
-        @model.send :detect_enum_conflict!, column, "can_#{new_method_name}?"
-        @model.send :define_method, "can_#{new_method_name}?" do
-          transitions.has_key? self.send(column).to_sym
-        end
+          # def can_assign?()
+          detect_enum_conflict! column, "can_#{new_method_name}?"
+          define_method "can_#{new_method_name}?" do
+            transitions.has_key? self.send(column).to_sym
+          end
 
-        @model.send :detect_enum_conflict!, column, "#{new_method_name}_transition"
-        @model.send :define_method, "#{new_method_name}_transition" do
-          transitions[self.send(column).to_sym].try! :first
+          # def assign_transition()
+          detect_enum_conflict! column, "#{new_method_name}_transition"
+          define_method "#{new_method_name}_transition" do
+            transitions[self.send(column).to_sym].try! :first
+          end
         end
       end
 
