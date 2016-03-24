@@ -70,6 +70,7 @@ module StatefulEnum
         column, prefix, suffix, name, transitions, before, after = @column, @prefix, @suffix, @name, @transitions, @before, @after
         new_method_name = "#{prefix}#{name}#{suffix}"
 
+        @model.send :detect_enum_conflict!, column, new_method_name
         @model.send(:define_method, new_method_name) do
           to, condition = transitions[self.send(column).to_sym]
           #TODO better error
@@ -85,14 +86,17 @@ module StatefulEnum
           end
         end
 
+        @model.send :detect_enum_conflict!, column, "#{new_method_name}!"
         @model.send(:define_method, "#{new_method_name}!") do
           send(new_method_name) || raise('Invalid transition')
         end
 
+        @model.send :detect_enum_conflict!, column, "can_#{new_method_name}?"
         @model.send(:define_method, "can_#{new_method_name}?") do
           transitions.has_key? self.send(column).to_sym
         end
 
+        @model.send :detect_enum_conflict!, column, "#{new_method_name}_transition"
         @model.send(:define_method, "#{new_method_name}_transition") do
           transitions[self.send(column).to_sym].try! :first
         end
