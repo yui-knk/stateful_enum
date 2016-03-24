@@ -33,40 +33,6 @@ module StatefulEnum
 
         instance_eval(&block) if block
 
-        define_transition_methods
-      end
-
-      def transition(transitions, options = {})
-        if options.blank?
-          options[:if] = transitions.delete :if
-          #TODO should err if if & unless were specified together?
-          if (unless_condition = transitions.delete :unless)
-            options[:if] = -> { !instance_exec(&unless_condition) }
-          end
-        end
-        transitions.each_pair do |from, to|
-          raise "Undefined state #{to}" unless @states.include? to
-          Array(from).each do |f|
-            raise "Undefined state #{f}" unless @states.include? f
-            raise "Duplicate entry: Transition from #{f} to #{@transitions[f].first} has already been defined." if @transitions[f]
-            @transitions[f] = [to, options[:if]]
-          end
-        end
-      end
-
-      def all
-        @states
-      end
-
-      def before(&block)
-        @before = block
-      end
-
-      def after(&block)
-        @after = block
-      end
-
-      private def define_transition_methods
         column, prefix, suffix, name, transitions, before, after = @column, @prefix, @suffix, @name, @transitions, @before, @after
         new_method_name = "#{prefix}#{name}#{suffix}"
 
@@ -100,6 +66,36 @@ module StatefulEnum
         @model.send :define_method, "#{new_method_name}_transition" do
           transitions[self.send(column).to_sym].try! :first
         end
+      end
+
+      def transition(transitions, options = {})
+        if options.blank?
+          options[:if] = transitions.delete :if
+          #TODO should err if if & unless were specified together?
+          if (unless_condition = transitions.delete :unless)
+            options[:if] = -> { !instance_exec(&unless_condition) }
+          end
+        end
+        transitions.each_pair do |from, to|
+          raise "Undefined state #{to}" unless @states.include? to
+          Array(from).each do |f|
+            raise "Undefined state #{f}" unless @states.include? f
+            raise "Duplicate entry: Transition from #{f} to #{@transitions[f].first} has already been defined." if @transitions[f]
+            @transitions[f] = [to, options[:if]]
+          end
+        end
+      end
+
+      def all
+        @states
+      end
+
+      def before(&block)
+        @before = block
+      end
+
+      def after(&block)
+        @after = block
       end
     end
   end
