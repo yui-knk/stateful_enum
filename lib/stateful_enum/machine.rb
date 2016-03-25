@@ -37,7 +37,7 @@ module StatefulEnum
         new_method_name = "#{prefix}#{name}#{suffix}"
 
         # defining event methods
-        model.instance_eval do
+        model.class_eval do
           # def assign()
           detect_enum_conflict! column, new_method_name
           define_method new_method_name do
