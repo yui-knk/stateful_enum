@@ -18,7 +18,7 @@ And bundle.
 
 ### You Ain't Gonna Need Abstraction
 
-stateful_enum depends on ActiveRecord. If you prefer a well-abstracted state machine library that supports multiple datastores, or Plain Old Ruby Objects (who needs that feature?), I'm sorry but this gem is not for you.
+stateful_enum depends on ActiveRecord. If you prefer a "well-abstracted" state machine library that supports multiple datastores, or Plain Old Ruby Objects (who needs that feature?), I'm sorry but this gem is not for you.
 
 ### I Hate Saving States in a VARCHAR Column
 
@@ -117,10 +117,19 @@ event :assign do
 end
 ```
 
-### Event hooks
+### Event Hooks
 
 You can define `before` and `after` event hooks inside of an `event` block.
 
+
+## Generating State Machine Diagrams
+
+stateful_enum includes a Rails generator that generates a state machine diagram.
+Note that you need to bundle the ruby-graphviz gem (and its dependencies) for the development env in order to run the generator.
+
+```bash
+% rails g stateful_enum:graph bug
+```
 
 ## TODO
 
