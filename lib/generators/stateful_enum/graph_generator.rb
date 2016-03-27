@@ -50,6 +50,11 @@ module StatefulEnum
       end
 
       def transition(transitions, options = {})
+        if options.blank?
+          transitions.delete :if
+          transitions.delete :unless
+        end
+
         transitions.each_pair do |from, to|
           Array(from).each do |f|
             @g.add_edge f.to_s, to.to_s, label: "#{@prefix}#{@name}#{@suffix}"
