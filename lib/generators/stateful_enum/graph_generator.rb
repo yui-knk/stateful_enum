@@ -30,6 +30,10 @@ module StatefulEnum
 
         instance_eval(&block)
 
+        (@g.each_edge.map {|e| e.node_two }.uniq - @g.each_edge.map {|e| e.node_one }.uniq).each do |final|
+          @g.get_node(final) {|n| n['shape'] = 'doublecircle' }
+        end
+
         @g.output png: "#{model.name}.png"
       end
 
