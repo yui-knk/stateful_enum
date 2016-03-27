@@ -27,7 +27,29 @@ module StatefulEnum
           @g.add_node state.to_s, label: state.to_s, width: '1', height: '1', shape: 'ellipse'
         end
 
+        instance_eval(&block)
+
         @g.output png: "#{model.name}.png"
+      end
+
+      def event(name, &block)
+        EventDrawer.new @g, @states, @prefix, @suffix, name, &block
+      end
+    end
+
+    class EventDrawer < ::StatefulEnum::Machine::Event
+      def initialize(g, states, prefix, suffix, name, &block)
+        @g, @states, @prefix, @suffix, @name = g, states, prefix, suffix, name
+
+        instance_eval(&block) if block
+      end
+
+      def transition(transitions, options = {})
+        transitions.each_pair do |from, to|
+          Array(from).each do |f|
+            @g.add_edge f.to_s, to.to_s, label: "#{@prefix}#{@name}#{@suffix}"
+          end
+        end
       end
     end
   end
