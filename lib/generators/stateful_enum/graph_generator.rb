@@ -26,6 +26,7 @@ module StatefulEnum
         states.each do |state|
           @g.add_node state.to_s, label: state.to_s, width: '1', height: '1', shape: 'ellipse'
         end
+        @g.add_edge @g.add_node('start state', shape: 'point'), @g.get_node_at_index(0)
 
         instance_eval(&block)
 
