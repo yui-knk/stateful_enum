@@ -43,7 +43,7 @@ module StatefulEnum
           # def assign()
           detect_enum_conflict! column, new_method_name
           define_method new_method_name do
-            to, condition = transitions[self.send(column).to_sym]
+            to, condition = transitions[send(column).to_sym]
             #TODO better error
             if to && (!condition || instance_exec(&condition))
               #TODO transaction?
@@ -66,13 +66,13 @@ module StatefulEnum
           # def can_assign?()
           detect_enum_conflict! column, "can_#{new_method_name}?"
           define_method "can_#{new_method_name}?" do
-            transitions.has_key? self.send(column).to_sym
+            transitions.has_key? send(column).to_sym
           end
 
           # def assign_transition()
           detect_enum_conflict! column, "#{new_method_name}_transition"
           define_method "#{new_method_name}_transition" do
-            transitions[self.send(column).to_sym].try! :first
+            transitions[send(column).to_sym].try! :first
           end
         end
       end
