@@ -15,7 +15,7 @@ module StatefulEnum
   module Graph
     def initialize(model, _column, states, prefix, suffix, &block)
       super
-      GraphDrawer.new model, states, @prefix, @suffix, &block if block
+      GraphDrawer.new model, states, @prefix, @suffix, &block
     end
 
     class GraphDrawer
