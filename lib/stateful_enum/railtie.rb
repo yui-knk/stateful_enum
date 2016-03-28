@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'stateful_enum/active_record_extension'
 
 module StatefulEnum

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Bug < ActiveRecord::Base
   belongs_to :assigned_to, class_name: 'User'
 

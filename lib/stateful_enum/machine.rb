@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module StatefulEnum
   class Machine
     def initialize(model, column, states, prefix, suffix, &block)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'stateful_enum/machine'
 
 module StatefulEnum
