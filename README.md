@@ -136,6 +136,11 @@ Note that you need to bundle the ruby-graphviz gem (and its dependencies) for th
 * Better Error handling
 
 
+## Support Rails Versions
+
+* Rails 4.1.x, 4.2.x, and 5.0 (edge)
+
+
 ## Contributing
 
 Pull requests are welcome on GitHub at https://github.com/amatsuda/stateful_enum.
