@@ -15,7 +15,6 @@ gemfile:
 
 before_install:
  - sudo apt-get install graphviz
- - gem install bundler -v 1.11.2
 
 matrix:
   allow_failures:
