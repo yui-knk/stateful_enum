@@ -29,7 +29,7 @@ module StatefulEnum
           @g.add_node state.to_s, label: state.to_s, width: '1', height: '1', shape: 'ellipse'
         end
         if (default_value = model.columns_hash[column.to_s].default)
-          default_label = model.defined_enums[column.to_s].key default_value
+          default_label = model.defined_enums[column.to_s].key default_value.to_i  # SQLite returns the default value in String
           @g.add_edge @g.add_node('start state', shape: 'point'), @g.get_node(default_label)
         end
 
