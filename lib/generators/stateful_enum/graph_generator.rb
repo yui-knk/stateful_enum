@@ -15,20 +15,23 @@ module StatefulEnum
   end
 
   module Graph
-    def initialize(model, _column, states, prefix, suffix, &block)
+    def initialize(model, column, states, prefix, suffix, &block)
       super
-      GraphDrawer.new model, states, @prefix, @suffix, &block
+      GraphDrawer.new model, column, states, @prefix, @suffix, &block
     end
 
     class GraphDrawer
-      def initialize(model, states, prefix, suffix, &block)
+      def initialize(model, column, states, prefix, suffix, &block)
         @states, @prefix, @suffix = states, prefix, suffix
         @g = ::GraphViz.new 'G', rankdir: 'TB'
 
         states.each do |state|
           @g.add_node state.to_s, label: state.to_s, width: '1', height: '1', shape: 'ellipse'
         end
-        @g.add_edge @g.add_node('start state', shape: 'point'), @g.get_node_at_index(0)
+        if (default_value = model.columns_hash[column.to_s].default)
+          default_label = model.defined_enums[column.to_s].key default_value
+          @g.add_edge @g.add_node('start state', shape: 'point'), @g.get_node(default_label)
+        end
 
         instance_eval(&block)
 
